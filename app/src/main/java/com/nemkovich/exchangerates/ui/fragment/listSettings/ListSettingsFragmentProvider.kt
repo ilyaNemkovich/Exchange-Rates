@@ -7,6 +7,6 @@ import dagger.android.ContributesAndroidInjector
 @Module
 abstract class ListSettingsFragmentProvider {
     @FragmentScope
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = [ListSettingsModule::class])
     abstract fun bindFragmetn(): ListSettingsFragment
 }

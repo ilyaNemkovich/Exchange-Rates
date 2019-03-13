@@ -1,7 +1,9 @@
 package com.nemkovich.exchangerates.ui.fragment.listSettings
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -9,9 +11,14 @@ import com.nemkovich.exchangerates.R
 import com.nemkovich.exchangerates.databinding.FragmentListSettingsBinding
 import com.nemkovich.exchangerates.ui.activity.MainActivity
 import com.nemkovich.exchangerates.ui.base.BaseFragment
+import com.nemkovich.exchangerates.ui.fragment.currencyList.adapter.CurrencyListAdapter
 import com.nemkovich.exchangerates.ui.utils.FragmentStack
+import javax.inject.Inject
 
-class ListSettingsFragment : BaseFragment<FragmentListSettingsBinding, ListSettingsViewModel>(){
+class ListSettingsFragment : BaseFragment<FragmentListSettingsBinding, ListSettingsViewModel>() {
+
+    @Inject
+    lateinit var recyclerAdapter: CurrencyListAdapter
 
     private val fragmentStack: FragmentStack by lazy { activity as MainActivity }
 
@@ -26,12 +33,21 @@ class ListSettingsFragment : BaseFragment<FragmentListSettingsBinding, ListSetti
         subscribeToLiveData()
     }
 
-    private fun subscribeToLiveData(){
-
+    private fun subscribeToLiveData() {
+        viewModel.mutableCurrencyList.observe(this, Observer {
+            if (it != null) {
+                recyclerAdapter.setItems(it)
+            }
+        })
     }
 
-    private fun setupView(){
-
+    private fun setupView() {
+        recyclerAdapter.changeViewType(1)
+        viewDataBinding.recyclerView.apply {
+            adapter = recyclerAdapter
+            layoutManager = LinearLayoutManager(this@ListSettingsFragment.context)
+                .apply { recycleChildrenOnDetach = true }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -40,8 +56,11 @@ class ListSettingsFragment : BaseFragment<FragmentListSettingsBinding, ListSetti
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item?.itemId){
-            R.id.confirm -> fragmentStack.pop()
+        when (item?.itemId) {
+            R.id.confirm -> {
+                viewModel.updateData(recyclerAdapter._currencyList)
+                fragmentStack.pop()
+            }
         }
         return super.onOptionsItemSelected(item)
     }

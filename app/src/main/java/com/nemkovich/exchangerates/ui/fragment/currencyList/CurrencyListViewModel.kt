@@ -10,17 +10,15 @@ import javax.inject.Inject
 
 class CurrencyListViewModel @Inject constructor(private val repository: CurrencyRepository) : BaseViewModel() {
     val mutableCurrencyList = MutableLiveData<List<CurrencyUiEntity>>()
+    var isLoaded: Boolean = false
 
-    init {
-        loadCurrencyList(true)
-    }
-
-    fun loadCurrencyList(isNetwork: Boolean) {
-        repository.getCurrencyList(isNetwork)
+    fun loadCurrencyList() {
+        repository.getCurrencyList()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { response ->
                 mutableCurrencyList.postValue(response)
+                isLoaded = true
             }.let(compositeDisposable::add)
     }
 }

@@ -34,6 +34,11 @@ class CurrencyListFragment : BaseFragment<FragmentCurrencyListBinding, CurrencyL
         subscribeToLiveData()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadCurrencyList()
+    }
+
     private fun subscribeToLiveData(){
         viewModel.mutableCurrencyList.observe(this, Observer {
             if(it != null){
@@ -43,6 +48,7 @@ class CurrencyListFragment : BaseFragment<FragmentCurrencyListBinding, CurrencyL
     }
 
     private fun setupView(){
+        recyclerAdapter.changeViewType(0)
         viewDataBinding.recyclerView.apply {
             adapter = recyclerAdapter
             layoutManager = LinearLayoutManager(this@CurrencyListFragment.context)
