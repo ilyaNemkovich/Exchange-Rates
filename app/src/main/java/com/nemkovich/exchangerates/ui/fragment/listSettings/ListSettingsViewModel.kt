@@ -27,6 +27,7 @@ class ListSettingsViewModel @Inject constructor(private val repository: Currency
 
     fun updateData(list: List<CurrencyUiEntity>) {
         Completable.fromAction {
+            list.forEach { it.position = list.indexOf(it) }
             repository.updateBd(list)
             mutableCurrencyList.postValue(list)
         }

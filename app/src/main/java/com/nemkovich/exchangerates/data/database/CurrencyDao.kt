@@ -10,7 +10,7 @@ interface CurrencyDao {
     @Query("SELECT * FROM currencies WHERE id = :id")
     fun getCurrencyById(id: Int): CurrencyUiEntity?
 
-    @Query("SELECT * FROM currencies WHERE favorite = :favorite")
+    @Query("SELECT * FROM currencies WHERE favorite = :favorite ORDER BY position ASC")
     fun getCurrencyFavorites(favorite: Int): Single<List<CurrencyUiEntity>>?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -22,6 +22,6 @@ interface CurrencyDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertCurrencies(currency: List<CurrencyUiEntity>)
 
-    @Query("SELECT * FROM currencies")
+    @Query("SELECT * FROM currencies ORDER BY position ASC")
     fun getAll(): Single<List<CurrencyUiEntity>>
 }

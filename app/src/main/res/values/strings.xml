@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Exchange Rates</string>
+    <string name="error_message">Не удалось получить курсы валют</string>
 </resources>

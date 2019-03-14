@@ -1,4 +1,4 @@
-package com.nemkovich.exchangerates.dto
+package com.nemkovich.exchangerates.data.network.dto
 
 data class CurrencyResponse(
     val Cur_Abbreviation: String,

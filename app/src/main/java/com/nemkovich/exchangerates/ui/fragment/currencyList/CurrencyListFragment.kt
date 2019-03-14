@@ -7,12 +7,14 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import com.nemkovich.exchangerates.R
-import com.nemkovich.exchangerates.ui.base.BaseFragment
 import com.nemkovich.exchangerates.databinding.FragmentCurrencyListBinding
 import com.nemkovich.exchangerates.ui.activity.MainActivity
+import com.nemkovich.exchangerates.ui.base.BaseFragment
 import com.nemkovich.exchangerates.ui.fragment.currencyList.adapter.CurrencyListAdapter
 import com.nemkovich.exchangerates.ui.fragment.listSettings.ListSettingsFragment
+import com.nemkovich.exchangerates.ui.utils.CalendarHelper
 import com.nemkovich.exchangerates.ui.utils.FragmentStack
 import javax.inject.Inject
 
@@ -36,23 +38,55 @@ class CurrencyListFragment : BaseFragment<FragmentCurrencyListBinding, CurrencyL
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadCurrencyList()
+        if (viewModel.isLoaded) {
+            viewModel.refreshList()
+        } else {
+            viewModel.loadCurrencyList()
+        }
     }
 
-    private fun subscribeToLiveData(){
+    private fun subscribeToLiveData() {
         viewModel.mutableCurrencyList.observe(this, Observer {
-            if(it != null){
+            if (it != null) {
                 recyclerAdapter.setItems(it)
+            }
+        })
+
+        viewModel.mutableIsError.observe(this, Observer {
+            if (it != null) {
+                errorViewState(it)
+            }
+        })
+
+        CalendarHelper.mutableFirstDay.observe(this, Observer {
+            if (it != null) {
+                viewDataBinding.tvFirstDay.text = it
+            }
+        })
+
+        CalendarHelper.mutableSecondDay.observe(this, Observer {
+            if (it != null) {
+                viewDataBinding.tvSecondDay.text = it
             }
         })
     }
 
-    private fun setupView(){
+    private fun setupView() {
+        viewDataBinding.tvFirstDay.text
+
         recyclerAdapter.changeViewType(0)
         viewDataBinding.recyclerView.apply {
             adapter = recyclerAdapter
             layoutManager = LinearLayoutManager(this@CurrencyListFragment.context)
                 .apply { recycleChildrenOnDetach = true }
+        }
+    }
+
+    private fun errorViewState(isError: Boolean) {
+        if (isError) {
+            recyclerAdapter.clearData()
+            setHasOptionsMenu(false)
+            viewDataBinding.tvError.visibility = View.VISIBLE
         }
     }
 
@@ -62,7 +96,7 @@ class CurrencyListFragment : BaseFragment<FragmentCurrencyListBinding, CurrencyL
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item?.itemId){
+        when (item?.itemId) {
             R.id.settings -> fragmentStack.push(ListSettingsFragment.newInstance())
         }
         return super.onOptionsItemSelected(item)

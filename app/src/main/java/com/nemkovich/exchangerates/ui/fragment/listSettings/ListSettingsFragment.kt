@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -19,6 +20,9 @@ class ListSettingsFragment : BaseFragment<FragmentListSettingsBinding, ListSetti
 
     @Inject
     lateinit var recyclerAdapter: CurrencyListAdapter
+
+    @Inject
+    lateinit var itemTouchHelper: ItemTouchHelper
 
     private val fragmentStack: FragmentStack by lazy { activity as MainActivity }
 
@@ -43,6 +47,7 @@ class ListSettingsFragment : BaseFragment<FragmentListSettingsBinding, ListSetti
 
     private fun setupView() {
         recyclerAdapter.changeViewType(1)
+        itemTouchHelper.attachToRecyclerView(viewDataBinding.recyclerView)
         viewDataBinding.recyclerView.apply {
             adapter = recyclerAdapter
             layoutManager = LinearLayoutManager(this@ListSettingsFragment.context)
@@ -58,7 +63,7 @@ class ListSettingsFragment : BaseFragment<FragmentListSettingsBinding, ListSetti
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.confirm -> {
-                viewModel.updateData(recyclerAdapter._currencyList)
+                viewModel.updateData(recyclerAdapter.currencyList)
                 fragmentStack.pop()
             }
         }

@@ -3,7 +3,7 @@ package com.nemkovich.exchangerates.ui.fragment.currencyList.data
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
-import com.nemkovich.exchangerates.dto.CurrencyResponse
+import com.nemkovich.exchangerates.data.network.dto.CurrencyResponse
 
 @Entity(tableName = "currencies")
 class CurrencyUiEntity(
